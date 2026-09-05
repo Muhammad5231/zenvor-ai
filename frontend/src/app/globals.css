@@ -1,0 +1,81 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  --bg-main: #ffffff;
+  --bg-sidebar: #f7f7f8;
+  --bg-surface: #f2f3f5;
+  --border-main: #e5e5e7;
+  --text-primary: #18181b;
+  --text-secondary: #71717a;
+}
+
+.dark {
+  color-scheme: dark;
+  --bg-main: #18181a;
+  --bg-sidebar: #131415;
+  --bg-surface: #26272b;
+  --border-main: #28292d;
+  --text-primary: #f4f4f5;
+  --text-secondary: #9b9da1;
+}
+
+body {
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  font-size: 15px;
+  line-height: 1.65;
+  overflow: hidden;
+}
+
+/* Ensure textarea and inputs use the JetBrains font */
+input, textarea, button {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #d4d4d8;
+  border-radius: 9999px;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: #2c2d30;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #a1a1aa;
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #3e4045;
+}
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: url('/fonts/JetBrainsMono-Regular.woff2') format('woff2'),
+       url('/fonts/JetBrainsMono-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: url('/fonts/JetBrainsMono-Bold.woff2') format('woff2'),
+       url('/fonts/JetBrainsMono-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Set JetBrains Mono as the site-wide font */
+body {
+  font-family: 'JetBrains Mono', monospace;
+}
