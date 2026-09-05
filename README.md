@@ -107,7 +107,7 @@ zenvor-ai/
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/YOUR_USERNAME/zenvor-ai.git
+git clone https://github.com/Muhammad5231/zenvor-ai.git
 cd zenvor-ai
 ```
 
