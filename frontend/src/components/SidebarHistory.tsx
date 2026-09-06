@@ -14,6 +14,7 @@ import {
   X,
   CheckSquare,
   Square,
+  Settings as SettingsIcon,
 } from "lucide-react";
 import { SessionItem } from "@/lib/api";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -28,6 +29,7 @@ interface SidebarHistoryProps {
   onUpdateSession: (id: string, data: { title?: string; is_pinned?: boolean }) => void;
   isOpen: boolean;
   onToggleOpen: () => void;
+  onOpenSettings: () => void;
 }
 
 export const SidebarHistory: React.FC<SidebarHistoryProps> = ({
@@ -40,6 +42,7 @@ export const SidebarHistory: React.FC<SidebarHistoryProps> = ({
   onUpdateSession,
   isOpen,
   onToggleOpen,
+  onOpenSettings,
 }) => {
   const [isMultiSelectMode, setIsMultiSelectMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -85,13 +88,16 @@ export const SidebarHistory: React.FC<SidebarHistoryProps> = ({
   const recentSessions = sessions.filter((s) => !s.is_pinned);
 
   return (
-    <aside className="w-[280px] h-screen bg-[#f7f7f8] dark:bg-[#131415] border-r border-[#e5e5e7] dark:border-[#222325] flex flex-col justify-between overflow-hidden shrink-0 select-none z-30 font-mono">
-      <div className="p-3.5 flex flex-col h-full">
+    <aside className="w-[296px] h-screen bg-[#f7f7f8] dark:bg-[#131415] border-r border-[#e5e5e7] dark:border-[#222325] flex flex-col justify-between overflow-hidden shrink-0 select-none z-30 font-mono">
+      <div className="p-4 flex flex-col h-full">
         {/* Header */}
-        <div className="space-y-3 pb-3">
+        <div className="space-y-3.5 pb-3.5">
           <div className="flex items-center justify-between px-1">
-            <span className="font-bold text-[16px] tracking-wider text-[#18181b] dark:text-[#ffffff] flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#4d6bfe]"></span>
+            <span className="font-bold text-[17px] tracking-wider text-[#18181b] dark:text-[#ffffff] flex items-center gap-2">
+              <span className="relative flex h-2.5 w-2.5">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#4d6bfe] opacity-50" />
+                <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-[#4d6bfe]" />
+              </span>
               ZENVOR AI
             </span>
             <div className="flex items-center gap-1">
@@ -100,13 +106,13 @@ export const SidebarHistory: React.FC<SidebarHistoryProps> = ({
                   setIsMultiSelectMode(!isMultiSelectMode);
                   setSelectedIds([]);
                 }}
-                className="text-[11px] text-[#71717a] dark:text-[#9b9da1] hover:text-[#18181b] dark:hover:text-[#ffffff] px-1.5 py-0.5 rounded transition-colors"
+                className="text-xs font-medium text-[#71717a] dark:text-[#9b9da1] hover:text-[#18181b] dark:hover:text-[#ffffff] px-2 py-1 rounded-md hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
               >
                 {isMultiSelectMode ? "Done" : "Select"}
               </button>
               <button
                 onClick={onToggleOpen}
-                className="p-1 rounded text-[#71717a] dark:text-[#9b9da1] hover:text-[#18181b] dark:hover:text-[#ffffff] transition-colors"
+                className="p-1.5 rounded-md text-[#71717a] dark:text-[#9b9da1] hover:text-[#18181b] dark:hover:text-[#ffffff] hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
                 title="Collapse sidebar"
               >
                 <PanelLeftClose className="w-4 h-4" />
@@ -116,7 +122,7 @@ export const SidebarHistory: React.FC<SidebarHistoryProps> = ({
           <motion.button
             whileTap={{ scale: 0.97 }}
             onClick={onNewChatClick}
-            className="w-full flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-[#ffffff] dark:bg-[#222325] hover:bg-[#ebebee] dark:hover:bg-[#2b2d30] border border-[#e5e5e7] dark:border-[#28292d] text-[#18181b] dark:text-[#ffffff] font-medium text-xs shadow-sm hover:shadow-md transition-all"
+            className="w-full flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-[#ffffff] dark:bg-[#222325] hover:bg-[#ebebee] dark:hover:bg-[#2b2d30] border border-[#e5e5e7] dark:border-[#28292d] text-[#18181b] dark:text-[#ffffff] font-medium text-sm shadow-sm hover:shadow-md transition-all"
           >
             <Plus className="w-4 h-4 text-[#4d6bfe]" />
             <span>New chat</span>
@@ -143,7 +149,7 @@ export const SidebarHistory: React.FC<SidebarHistoryProps> = ({
         <div className="flex-1 overflow-y-auto py-2 space-y-4 pr-1">
           {pinnedSessions.length > 0 && (
             <div className="space-y-1">
-              <div className="text-[10px] font-semibold text-[#71717a] dark:text-[#9b9da1] uppercase px-2 mb-1 tracking-wider flex items-center gap-1">
+              <div className="text-[11px] font-semibold text-[#71717a] dark:text-[#9b9da1] uppercase px-2 mb-1 tracking-wider flex items-center gap-1">
                 <Pin className="w-2.5 h-2.5" /> Pinned
               </div>
               <AnimatePresence initial={false}>
@@ -154,7 +160,7 @@ export const SidebarHistory: React.FC<SidebarHistoryProps> = ({
 
           <div className="space-y-1">
             {pinnedSessions.length > 0 && (
-              <div className="text-[10px] font-semibold text-[#71717a] dark:text-[#9b9da1] uppercase px-2 mb-1 tracking-wider">
+              <div className="text-[11px] font-semibold text-[#71717a] dark:text-[#9b9da1] uppercase px-2 mb-1 tracking-wider">
                 Recent
               </div>
             )}
@@ -174,9 +180,18 @@ export const SidebarHistory: React.FC<SidebarHistoryProps> = ({
         <div className="pt-3 border-t border-[#e5e5e7] dark:border-[#222325] flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-[11px] text-[#71717a] dark:text-[#9b9da1]">Local Hub</span>
+            <span className="text-xs text-[#71717a] dark:text-[#9b9da1]">Local Hub</span>
           </div>
-          <ThemeToggle />
+          <div className="flex items-center gap-1">
+            <button
+              onClick={onOpenSettings}
+              className="p-1.5 rounded-md text-[#71717a] dark:text-[#9b9da1] hover:text-[#18181b] dark:hover:text-[#ffffff] hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+              title="Settings"
+            >
+              <SettingsIcon className="w-4 h-4" />
+            </button>
+            <ThemeToggle />
+          </div>
         </div>
       </div>
     </aside>
@@ -195,7 +210,7 @@ export const SidebarHistory: React.FC<SidebarHistoryProps> = ({
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, x: -8 }}
         transition={{ duration: 0.18 }}
-        className={`group relative flex items-center justify-between px-3 py-2 rounded-xl text-xs cursor-pointer transition-colors ${
+        className={`group relative flex items-center justify-between px-3 py-2.5 rounded-xl text-sm cursor-pointer transition-colors ${
           isActive
             ? "bg-[#ebecee] dark:bg-[#222325] text-[#18181b] dark:text-[#ffffff] font-medium shadow-sm border border-[#d4d4d8]/40 dark:border-[#33353a]/60"
             : "text-[#71717a] dark:text-[#9b9da1] hover:bg-[#f0f0f2] dark:hover:bg-[#1a1b1d] hover:text-[#18181b] dark:hover:text-[#ffffff]"
@@ -228,7 +243,7 @@ export const SidebarHistory: React.FC<SidebarHistoryProps> = ({
               value={editTitleText}
               onChange={(e) => setEditTitleText(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && saveRenaming(s.id)}
-              className="w-full bg-[#ffffff] dark:bg-[#131415] border border-[#4d6bfe] rounded px-1.5 py-0.5 text-xs text-[#18181b] dark:text-white outline-none"
+              className="w-full bg-[#ffffff] dark:bg-[#131415] border border-[#4d6bfe] rounded px-1.5 py-1 text-sm text-[#18181b] dark:text-white outline-none"
               autoFocus
             />
             <button onClick={() => saveRenaming(s.id)} className="text-emerald-500 p-0.5">
@@ -242,7 +257,7 @@ export const SidebarHistory: React.FC<SidebarHistoryProps> = ({
           <>
             {/* Full title visible with line-clamp/ellipsis and hover tooltip */}
             <div className="flex items-center gap-2.5 overflow-hidden pr-2 flex-1">
-              <MessageSquare className="w-3.5 h-3.5 shrink-0 opacity-70 text-[#4d6bfe]" />
+              <MessageSquare className="w-4 h-4 shrink-0 opacity-70 text-[#4d6bfe]" />
               <span className="truncate flex-1 tracking-normal" title={s.title}>
                 {s.title}
               </span>

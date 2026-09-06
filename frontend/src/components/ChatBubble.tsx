@@ -92,7 +92,7 @@ export const ChatTurnBubble: React.FC<ChatTurnProps> = ({
                 rows={1}
                 value={editText}
                 onChange={(e) => setEditText(e.target.value)}
-                className="w-full bg-transparent resize-none outline-none text-[15px] leading-relaxed text-[#18181b] dark:text-[#ffffff] placeholder-[#8e9096]"
+                className="w-full bg-transparent resize-none border-0 outline-none ring-0 shadow-none leading-relaxed text-[#18181b] dark:text-[#ffffff] placeholder-[#8e9096] zv-scalable-text"
                 autoFocus
               />
               <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#e5e5e7] dark:border-[#33353a]">
@@ -116,7 +116,7 @@ export const ChatTurnBubble: React.FC<ChatTurnProps> = ({
             </div>
           ) : (
             <div className="flex flex-col items-end">
-              <div className="bg-[#f2f3f5] dark:bg-[#26272b] text-[#18181b] dark:text-[#ffffff] px-4 py-3 rounded-2xl rounded-tr-none text-[15px] leading-relaxed shadow-sm whitespace-pre-wrap">
+              <div className="bg-[#f2f3f5] dark:bg-[#26272b] text-[#18181b] dark:text-[#ffffff] px-4 py-3 rounded-2xl rounded-tr-none leading-relaxed shadow-sm whitespace-pre-wrap zv-scalable-text">
                 {currentVersion.prompt}
               </div>
 
@@ -173,7 +173,7 @@ export const ChatTurnBubble: React.FC<ChatTurnProps> = ({
             isStreaming={isStreaming && isLastTurn}
           />
 
-          <div className="text-[15px] leading-relaxed text-[#18181b] dark:text-[#d1d2d6]">
+          <div className="leading-relaxed text-[#18181b] dark:text-[#d1d2d6] zv-scalable-text">
             <ReactMarkdown
               remarkPlugins={[remarkGfm]}
               components={{

@@ -25,6 +25,12 @@ export default function RootLayout({
                   document.documentElement.classList.add('dark');
                 }
               } catch (e) {}
+              try {
+                const savedScale = localStorage.getItem('zenvor-font-scale');
+                if (savedScale) {
+                  document.documentElement.style.setProperty('--chat-font-scale', savedScale);
+                }
+              } catch (e) {}
             `,
           }}
         />

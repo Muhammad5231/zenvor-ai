@@ -10,6 +10,7 @@
   --border-main: #e5e5e7;
   --text-primary: #18181b;
   --text-secondary: #71717a;
+  --chat-font-scale: 1;
 }
 
 .dark {
@@ -57,6 +58,28 @@ select:focus-visible {
 /* Ensure textarea and inputs use the JetBrains font */
 input, textarea, button {
   font-family: 'JetBrains Mono', monospace;
+}
+
+/*
+ * Strip native form-control chrome from textareas.
+ * With color-scheme set (light/dark above), browsers paint their own
+ * inset border/shadow on <textarea> elements that Tailwind's border-width
+ * reset does not touch (that reset covers `border`, not the UA's painted
+ * control appearance). Left alone, this shows up as a second "box"
+ * around typed text, independent of whatever border we intentionally
+ * put on the surrounding container. Force it off everywhere.
+ */
+textarea, input {
+  appearance: none;
+  -webkit-appearance: none;
+  border: none;
+  box-shadow: none;
+  background-color: transparent;
+}
+
+/* Chat text that responds to the "Font size" setting in Settings */
+.zv-scalable-text {
+  font-size: calc(15px * var(--chat-font-scale, 1));
 }
 
 /* Custom Scrollbars */

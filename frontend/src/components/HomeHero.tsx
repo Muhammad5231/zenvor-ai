@@ -54,7 +54,7 @@ export const HomeHero: React.FC<HomeHeroProps> = ({
 
   return (
     <div className="relative h-full flex flex-col items-center justify-center max-w-3xl mx-auto px-4 text-center -mt-6 font-mono select-none">
-      {/* Ambient backdrop — quiet, decorative, accent-only */}
+      {/* Ambient backdrop */}
       <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
         <div className="absolute left-1/2 top-1/3 h-[420px] w-[420px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#4d6bfe]/[0.07] dark:bg-[#4d6bfe]/[0.10] blur-[90px]" />
       </div>
@@ -100,7 +100,7 @@ export const HomeHero: React.FC<HomeHeroProps> = ({
               }
             }}
             placeholder="Message ZENVOR AI..."
-            className="w-full bg-transparent resize-none outline-none text-[14px] text-[#18181b] dark:text-[#ffffff] placeholder-[#73757d] font-mono leading-relaxed"
+            className="w-full bg-transparent resize-none border-none outline-none ring-0 shadow-none focus:border-none focus:outline-none focus:ring-0 focus:shadow-none focus-visible:outline-none focus-visible:ring-0 text-[#18181b] dark:text-[#ffffff] placeholder-[#73757d] font-mono leading-relaxed zv-scalable-text"
             autoFocus
           />
 

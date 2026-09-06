@@ -75,6 +75,25 @@ export const Workspace: React.FC<WorkspaceProps> = ({ initialChatId }) => {
     chatScrollRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [turns, statusMessage]);
 
+  // Global keyboard shortcuts: Ctrl/Cmd+B toggles the sidebar,
+  // Ctrl/Cmd+, opens Settings, Esc closes the Settings dialog.
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const isModKey = e.ctrlKey || e.metaKey;
+      if (isModKey && e.key.toLowerCase() === "b") {
+        e.preventDefault();
+        setIsSidebarOpen((prev) => !prev);
+      } else if (isModKey && e.key === ",") {
+        e.preventDefault();
+        setIsSettingsOpen(true);
+      } else if (e.key === "Escape") {
+        setIsSettingsOpen(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
   const initApp = async () => {
     try {
       const [modelsData, sessionsData] = await Promise.all([
@@ -168,6 +187,44 @@ export const Workspace: React.FC<WorkspaceProps> = ({ initialChatId }) => {
     }
   };
 
+  const handleExportAllData = async () => {
+    const allSessions = await fetchSessions();
+    const bundle = await Promise.all(
+      allSessions.map(async (s) => {
+        try {
+          const messages = await fetchMessages(s.id);
+          return { id: s.id, title: s.title, is_pinned: s.is_pinned, messages };
+        } catch (e) {
+          console.error(`Failed to export session ${s.id}:`, e);
+          return { id: s.id, title: s.title, is_pinned: s.is_pinned, messages: [], error: true };
+        }
+      })
+    );
+    const payload = {
+      exported_at: new Date().toISOString(),
+      app: "ZENVOR AI",
+      session_count: bundle.length,
+      sessions: bundle,
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `zenvor-ai-export-${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleDeleteAllData = async () => {
+    const allSessions = await fetchSessions();
+    if (allSessions.length === 0) return;
+    await batchDeleteSessions(allSessions.map((s) => s.id));
+    setSessions([]);
+    handleNewChatClick();
+  };
+
   const handleModelSwitch = async (filename: string) => {
     await loadModel(filename, gpuLayers, contextSize);
     setActiveModel(filename);
@@ -233,7 +290,7 @@ export const Workspace: React.FC<WorkspaceProps> = ({ initialChatId }) => {
           <motion.div
             key="sidebar"
             initial={{ width: 0, opacity: 0 }}
-            animate={{ width: 280, opacity: 1 }}
+            animate={{ width: 296, opacity: 1 }}
             exit={{ width: 0, opacity: 0 }}
             transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
             className="h-screen shrink-0 overflow-hidden"
@@ -248,6 +305,7 @@ export const Workspace: React.FC<WorkspaceProps> = ({ initialChatId }) => {
               onUpdateSession={handleUpdateSession}
               isOpen={isSidebarOpen}
               onToggleOpen={() => setIsSidebarOpen(!isSidebarOpen)}
+              onOpenSettings={() => setIsSettingsOpen(true)}
             />
           </motion.div>
         )}
@@ -394,7 +452,8 @@ export const Workspace: React.FC<WorkspaceProps> = ({ initialChatId }) => {
                     }
                   }}
                   placeholder="Message ZENVOR AI..."
-                  className="w-full resize-none bg-transparent outline-none text-[15px] leading-relaxed text-[#18181b] dark:text-[#ffffff] placeholder-[#73757d] font-mono"
+                  style={{ outline: "none", boxShadow: "none", border: "none" }}
+                  className="w-full resize-none border-none outline-none ring-0 shadow-none focus:border-none focus:outline-none focus:ring-0 focus:shadow-none focus-visible:outline-none focus-visible:ring-0 bg-transparent leading-relaxed text-[#18181b] dark:text-[#ffffff] placeholder-[#73757d] font-mono zv-scalable-text"
                 />
 
                 <div className="flex items-center justify-between pt-2 border-t border-[#e5e5e7] dark:border-[#2a2b2f]">
@@ -464,6 +523,8 @@ export const Workspace: React.FC<WorkspaceProps> = ({ initialChatId }) => {
         setGpuLayers={setGpuLayers}
         contextSize={contextSize}
         setContextSize={setContextSize}
+        onExportData={handleExportAllData}
+        onDeleteAllData={handleDeleteAllData}
       />
     </div>
   );
