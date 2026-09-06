@@ -15,9 +15,9 @@ export const SearchBadge: React.FC<SearchBadgeProps> = ({ sources }) => {
     <motion.div
       initial={{ opacity: 0, y: 5 }}
       animate={{ opacity: 1, y: 0 }}
-      className="mt-3 pt-3 border-t border-slate-800/80"
+      className="mt-3 pt-3 border-t border-[#e5e5e7] dark:border-[#28292d]"
     >
-      <div className="flex items-center gap-1.5 text-xs text-emerald-400 font-medium mb-2">
+      <div className="flex items-center gap-1.5 text-xs text-[#4d6bfe] font-medium mb-2">
         <Globe className="w-3.5 h-3.5" />
         <span>Live Web Citations</span>
       </div>
@@ -28,15 +28,15 @@ export const SearchBadge: React.FC<SearchBadgeProps> = ({ sources }) => {
             href={src.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-start justify-between gap-2 p-2 rounded-lg bg-slate-900/50 border border-slate-800 hover:border-slate-700 transition-colors group"
+            className="flex items-start justify-between gap-2 p-2 rounded-lg bg-[#f2f3f5] dark:bg-[#1e1f22] border border-[#e5e5e7] dark:border-[#2d2e33] hover:border-[#4d6bfe]/50 transition-colors group"
           >
             <div className="overflow-hidden">
-              <p className="text-xs text-slate-300 font-medium truncate group-hover:text-emerald-300 transition-colors">
+              <p className="text-xs text-[#18181b] dark:text-[#d1d2d6] font-medium truncate group-hover:text-[#4d6bfe] transition-colors">
                 {src.title}
               </p>
-              <p className="text-[10px] text-slate-500 truncate">{src.url}</p>
+              <p className="text-[10px] text-[#71717a] dark:text-[#9b9da1] truncate">{src.url}</p>
             </div>
-            <ExternalLink className="w-3 h-3 text-slate-500 group-hover:text-slate-300 shrink-0 mt-0.5" />
+            <ExternalLink className="w-3 h-3 text-[#71717a] dark:text-[#9b9da1] group-hover:text-[#4d6bfe] shrink-0 mt-0.5 transition-colors" />
           </a>
         ))}
       </div>

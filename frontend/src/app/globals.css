@@ -28,6 +28,30 @@ body {
   font-size: 15px;
   line-height: 1.65;
   overflow: hidden;
+  scroll-behavior: smooth;
+}
+
+::selection {
+  background-color: rgba(77, 107, 254, 0.25);
+}
+
+/* Consistent focus ring using the app's accent color */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid #4d6bfe;
+  outline-offset: 2px;
+}
+
+/* Reduced motion: respect the user's OS preference */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
 }
 
 /* Ensure textarea and inputs use the JetBrains font */

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 import { Globe, Brain, Send, Sliders, PanelLeftOpen, Plus, Square } from "lucide-react";
 import {
   fetchModels,
@@ -20,6 +21,7 @@ import { SettingsModal } from "@/components/SettingsModal";
 import { ChatTurnBubble } from "@/components/ChatBubble";
 import { HomeHero } from "@/components/HomeHero";
 import { useStreamingChat } from "@/hooks/useStreamingChat";
+import { useAutoResizeTextarea } from "@/hooks/useAutoResizeTextarea";
 
 interface WorkspaceProps {
   initialChatId?: string;
@@ -40,6 +42,10 @@ export const Workspace: React.FC<WorkspaceProps> = ({ initialChatId }) => {
   const [contextSize, setContextSize] = useState(4096);
   const [inputPrompt, setInputPrompt] = useState("");
   const chatScrollRef = useRef<HTMLDivElement>(null);
+  const composerRef = useAutoResizeTextarea<HTMLTextAreaElement>(inputPrompt, {
+    minHeight: 44,
+    maxHeight: 260,
+  });
 
   const {
     turns,
@@ -222,39 +228,60 @@ export const Workspace: React.FC<WorkspaceProps> = ({ initialChatId }) => {
 
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-[#ffffff] dark:bg-[#18181a] text-[#18181b] dark:text-[#d1d2d6] transition-colors">
-      <SidebarHistory
-        sessions={sessions}
-        activeSessionId={activeSessionId}
-        onSelectSession={handleSelectSession}
-        onNewChatClick={handleNewChatClick}
-        onDeleteSession={handleDeleteSession}
-        onBatchDelete={handleBatchDelete}
-        onUpdateSession={handleUpdateSession}
-        isOpen={isSidebarOpen}
-        onToggleOpen={() => setIsSidebarOpen(!isSidebarOpen)}
-      />
+      <AnimatePresence initial={false}>
+        {isSidebarOpen && (
+          <motion.div
+            key="sidebar"
+            initial={{ width: 0, opacity: 0 }}
+            animate={{ width: 280, opacity: 1 }}
+            exit={{ width: 0, opacity: 0 }}
+            transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
+            className="h-screen shrink-0 overflow-hidden"
+          >
+            <SidebarHistory
+              sessions={sessions}
+              activeSessionId={activeSessionId}
+              onSelectSession={handleSelectSession}
+              onNewChatClick={handleNewChatClick}
+              onDeleteSession={handleDeleteSession}
+              onBatchDelete={handleBatchDelete}
+              onUpdateSession={handleUpdateSession}
+              isOpen={isSidebarOpen}
+              onToggleOpen={() => setIsSidebarOpen(!isSidebarOpen)}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <div className="flex-1 flex flex-col h-full relative overflow-hidden">
-        <header className="h-12 border-b border-[#e5e5e7] dark:border-[#222325] px-4 flex items-center justify-between z-20">
+        <header className="h-12 border-b border-[#e5e5e7] dark:border-[#222325] px-4 flex items-center justify-between z-20 bg-[#ffffff]/80 dark:bg-[#18181a]/80 backdrop-blur-sm">
           <div className="flex items-center gap-2">
-            {!isSidebarOpen && (
-              <>
-                <button
-                  onClick={() => setIsSidebarOpen(true)}
-                  className="p-1 rounded text-[#71717a] dark:text-[#9b9da1] hover:text-[#18181b] dark:hover:text-[#ffffff] transition-colors"
-                  title="Open sidebar"
+            <AnimatePresence initial={false}>
+              {!isSidebarOpen && (
+                <motion.div
+                  initial={{ opacity: 0, x: -6 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -6 }}
+                  transition={{ duration: 0.15 }}
+                  className="flex items-center gap-2"
                 >
-                  <PanelLeftOpen className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={handleNewChatClick}
-                  className="p-1 rounded text-[#71717a] dark:text-[#9b9da1] hover:text-[#18181b] dark:hover:text-[#ffffff] transition-colors"
-                  title="New chat"
-                >
-                  <Plus className="w-4 h-4" />
-                </button>
-              </>
-            )}
+                  <button
+                    onClick={() => setIsSidebarOpen(true)}
+                    className="p-1 rounded text-[#71717a] dark:text-[#9b9da1] hover:text-[#18181b] dark:hover:text-[#ffffff] hover:bg-[#f2f3f5] dark:hover:bg-[#212224] transition-colors"
+                    title="Open sidebar"
+                  >
+                    <PanelLeftOpen className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={handleNewChatClick}
+                    className="p-1 rounded text-[#71717a] dark:text-[#9b9da1] hover:text-[#18181b] dark:hover:text-[#ffffff] hover:bg-[#f2f3f5] dark:hover:bg-[#212224] transition-colors"
+                    title="New chat"
+                  >
+                    <Plus className="w-4 h-4" />
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
             <ModelSelector
               models={models}
               activeModel={activeModel}
@@ -262,72 +289,102 @@ export const Workspace: React.FC<WorkspaceProps> = ({ initialChatId }) => {
             />
           </div>
 
-          <button
+          <motion.button
+            whileTap={{ scale: 0.92 }}
             onClick={() => setIsSettingsOpen(true)}
-            className="p-1.5 rounded-lg border border-[#e5e5e7] dark:border-[#28292d] text-[#71717a] dark:text-[#9b9da1] hover:text-[#18181b] dark:hover:text-[#ffffff] transition-colors"
+            className="p-1.5 rounded-lg border border-[#e5e5e7] dark:border-[#28292d] text-[#71717a] dark:text-[#9b9da1] hover:text-[#18181b] dark:hover:text-[#ffffff] hover:border-[#4d6bfe]/50 transition-colors"
             title="Model Hyperparameters"
           >
             <Sliders className="w-3.5 h-3.5" />
-          </button>
+          </motion.button>
         </header>
 
         <main className="flex-1 overflow-y-auto px-4 py-6 md:px-8 space-y-6">
-          {!activeSessionId || turns.length === 0 ? (
-            <HomeHero
-              inputPrompt={inputPrompt}
-              setInputPrompt={setInputPrompt}
-              onSend={handleSend}
-              enableSearch={enableSearch}
-              setEnableSearch={setEnableSearch}
-              enableMemory={enableMemory}
-              setEnableMemory={setEnableMemory}
-              isStreaming={isStreaming}
-              onStop={stopGenerating}
-            />
-          ) : (
-            turns.map((turn, idx) => (
-              <ChatTurnBubble
-                key={turn.id}
-                turn={turn}
-                turnIndex={idx}
-                onEditPrompt={(tIdx, newPrompt) =>
-                  editPromptTurn({
-                    sessionId: activeSessionId,
-                    turnIndex: tIdx,
-                    newPrompt,
-                    enableSearch,
-                    enableMemory,
-                    temperature,
-                  })
-                }
-                onNavigateVersion={navigateVersion}
-                onRegenerate={handleRegenerate}
-                isStreaming={isStreaming}
-                isLastTurn={idx === turns.length - 1}
-              />
-            ))
-          )}
+          <AnimatePresence mode="wait">
+            {!activeSessionId || turns.length === 0 ? (
+              <motion.div
+                key="hero"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.18 }}
+                className="h-full"
+              >
+                <HomeHero
+                  inputPrompt={inputPrompt}
+                  setInputPrompt={setInputPrompt}
+                  onSend={handleSend}
+                  enableSearch={enableSearch}
+                  setEnableSearch={setEnableSearch}
+                  enableMemory={enableMemory}
+                  setEnableMemory={setEnableMemory}
+                  isStreaming={isStreaming}
+                  onStop={stopGenerating}
+                />
+              </motion.div>
+            ) : (
+              <motion.div
+                key="thread"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.18 }}
+                className="space-y-6"
+              >
+                {turns.map((turn, idx) => (
+                  <ChatTurnBubble
+                    key={turn.id}
+                    turn={turn}
+                    turnIndex={idx}
+                    onEditPrompt={(tIdx, newPrompt) =>
+                      editPromptTurn({
+                        sessionId: activeSessionId,
+                        turnIndex: tIdx,
+                        newPrompt,
+                        enableSearch,
+                        enableMemory,
+                        temperature,
+                      })
+                    }
+                    onNavigateVersion={navigateVersion}
+                    onRegenerate={handleRegenerate}
+                    isStreaming={isStreaming}
+                    isLastTurn={idx === turns.length - 1}
+                  />
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
           <div ref={chatScrollRef} />
         </main>
 
         {activeSessionId && turns.length > 0 && (
           <footer className="p-4 relative">
             <div className="max-w-3xl mx-auto space-y-2">
-              {isStreaming && (
-                <div className="flex justify-center">
-                  <button
-                    onClick={stopGenerating}
-                    className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#f2f3f5] dark:bg-[#26272b] border border-[#e5e5e7] dark:border-[#33353a] text-xs font-medium text-[#18181b] dark:text-[#ffffff] shadow-md hover:bg-[#e5e5e7] dark:hover:bg-[#33353a] transition-all"
+              <AnimatePresence>
+                {isStreaming && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 6, scale: 0.96 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 6, scale: 0.96 }}
+                    transition={{ duration: 0.15 }}
+                    className="flex justify-center"
                   >
-                    <Square className="w-3 h-3 fill-current text-rose-500" />
-                    <span>Stop generating</span>
-                  </button>
-                </div>
-              )}
+                    <button
+                      onClick={stopGenerating}
+                      className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#f2f3f5] dark:bg-[#26272b] border border-[#e5e5e7] dark:border-[#33353a] text-xs font-medium text-[#18181b] dark:text-[#ffffff] shadow-md hover:bg-[#e5e5e7] dark:hover:bg-[#33353a] transition-all"
+                    >
+                      <Square className="w-3 h-3 fill-current text-rose-500" />
+                      <span>Stop generating</span>
+                    </button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
-              <div className="rounded-2xl bg-[#f2f3f5] dark:bg-[#212224] border border-[#e5e5e7] dark:border-[#2d2e33] p-3 shadow-lg focus-within:border-[#4d6bfe] transition-all">
+              <div className="rounded-2xl bg-[#f2f3f5] dark:bg-[#212224] border border-[#e5e5e7] dark:border-[#2d2e33] p-3 shadow-lg focus-within:border-[#4d6bfe] focus-within:shadow-[0_0_0_3px_rgba(77,107,254,0.12)] transition-all duration-200">
                 <textarea
-                  rows={2}
+                  ref={composerRef}
+                  rows={1}
                   value={inputPrompt}
                   onChange={(e) => setInputPrompt(e.target.value)}
                   onKeyDown={(e) => {
@@ -337,12 +394,13 @@ export const Workspace: React.FC<WorkspaceProps> = ({ initialChatId }) => {
                     }
                   }}
                   placeholder="Message ZENVOR AI..."
-                  className="w-full resize-none bg-transparent outline-none text-[15px] text-[#18181b] dark:text-[#ffffff] placeholder-[#73757d] font-sans"
+                  className="w-full resize-none bg-transparent outline-none text-[15px] leading-relaxed text-[#18181b] dark:text-[#ffffff] placeholder-[#73757d] font-mono"
                 />
 
                 <div className="flex items-center justify-between pt-2 border-t border-[#e5e5e7] dark:border-[#2a2b2f]">
                   <div className="flex items-center gap-1.5">
-                    <button
+                    <motion.button
+                      whileTap={{ scale: 0.94 }}
                       type="button"
                       onClick={() => setEnableSearch(!enableSearch)}
                       className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium border transition-all ${
@@ -353,8 +411,9 @@ export const Workspace: React.FC<WorkspaceProps> = ({ initialChatId }) => {
                     >
                       <Globe className="w-3 h-3" />
                       <span>Search</span>
-                    </button>
-                    <button
+                    </motion.button>
+                    <motion.button
+                      whileTap={{ scale: 0.94 }}
                       type="button"
                       onClick={() => setEnableMemory(!enableMemory)}
                       className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium border transition-all ${
@@ -365,26 +424,28 @@ export const Workspace: React.FC<WorkspaceProps> = ({ initialChatId }) => {
                     >
                       <Brain className="w-3 h-3" />
                       <span>Memory</span>
-                    </button>
+                    </motion.button>
                   </div>
 
                   {isStreaming ? (
-                    <button
+                    <motion.button
+                      whileTap={{ scale: 0.9 }}
                       onClick={stopGenerating}
                       className="p-1.5 rounded-xl bg-rose-500 text-white hover:bg-rose-600 transition-colors shadow-sm"
                       title="Stop generating"
                     >
                       <Square className="w-4 h-4 fill-current" />
-                    </button>
+                    </motion.button>
                   ) : (
-                    <button
+                    <motion.button
+                      whileTap={{ scale: 0.9 }}
                       onClick={handleSend}
                       disabled={!inputPrompt.trim()}
                       className="p-1.5 rounded-xl bg-[#4d6bfe] text-white hover:bg-[#3f5be0] disabled:opacity-30 transition-all shadow-sm"
                       title="Send prompt"
                     >
                       <Send className="w-4 h-4" />
-                    </button>
+                    </motion.button>
                   )}
                 </div>
               </div>

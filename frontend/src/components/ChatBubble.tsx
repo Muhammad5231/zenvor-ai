@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { motion } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import {
@@ -15,6 +16,7 @@ import {
 } from "lucide-react";
 import { CodeBlock } from "./CodeBlock";
 import { ThinkingBlock } from "./ThinkingBlock";
+import { useAutoResizeTextarea } from "@/hooks/useAutoResizeTextarea";
 
 export interface TurnVersion {
   prompt: string;
@@ -56,6 +58,10 @@ export const ChatTurnBubble: React.FC<ChatTurnProps> = ({
   const [editText, setEditText] = useState(currentVersion.prompt);
   const [promptCopied, setPromptCopied] = useState(false);
   const [responseCopied, setResponseCopied] = useState(false);
+  const editTextareaRef = useAutoResizeTextarea<HTMLTextAreaElement>(editText, {
+    minHeight: 60,
+    maxHeight: 320,
+  });
 
   const handleCopyPrompt = () => {
     navigator.clipboard.writeText(currentVersion.prompt);
@@ -70,17 +76,23 @@ export const ChatTurnBubble: React.FC<ChatTurnProps> = ({
   };
 
   return (
-    <div className="space-y-6 max-w-3xl mx-auto w-full">
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+      className="space-y-6 max-w-3xl mx-auto w-full"
+    >
       {/* User Bubble */}
       <div className="flex flex-col items-end group">
         <div className="max-w-[85%] w-full">
           {isEditing ? (
             <div className="p-3 bg-[#f2f3f5] dark:bg-[#26272b] border border-[#d4d4d8] dark:border-[#3b3d42] rounded-2xl shadow-md space-y-2.5">
               <textarea
-                rows={3}
+                ref={editTextareaRef}
+                rows={1}
                 value={editText}
                 onChange={(e) => setEditText(e.target.value)}
-                className="w-full bg-transparent resize-none outline-none text-[15px] text-[#18181b] dark:text-[#ffffff] placeholder-[#8e9096]"
+                className="w-full bg-transparent resize-none outline-none text-[15px] leading-relaxed text-[#18181b] dark:text-[#ffffff] placeholder-[#8e9096]"
                 autoFocus
               />
               <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#e5e5e7] dark:border-[#33353a]">
@@ -236,6 +248,6 @@ export const ChatTurnBubble: React.FC<ChatTurnProps> = ({
           </div>
         </div>
       )}
-    </div>
+    </motion.div>
   );
 };

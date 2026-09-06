@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Plus,
   MessageSquare,
@@ -83,8 +84,6 @@ export const SidebarHistory: React.FC<SidebarHistoryProps> = ({
   const pinnedSessions = sessions.filter((s) => s.is_pinned);
   const recentSessions = sessions.filter((s) => !s.is_pinned);
 
-  if (!isOpen) return null;
-
   return (
     <aside className="w-[280px] h-screen bg-[#f7f7f8] dark:bg-[#131415] border-r border-[#e5e5e7] dark:border-[#222325] flex flex-col justify-between overflow-hidden shrink-0 select-none z-30 font-mono">
       <div className="p-3.5 flex flex-col h-full">
@@ -114,13 +113,14 @@ export const SidebarHistory: React.FC<SidebarHistoryProps> = ({
               </button>
             </div>
           </div>
-          <button
+          <motion.button
+            whileTap={{ scale: 0.97 }}
             onClick={onNewChatClick}
-            className="w-full flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-[#ffffff] dark:bg-[#222325] hover:bg-[#ebebee] dark:hover:bg-[#2b2d30] border border-[#e5e5e7] dark:border-[#28292d] text-[#18181b] dark:text-[#ffffff] font-medium text-xs shadow-sm transition-all"
+            className="w-full flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-[#ffffff] dark:bg-[#222325] hover:bg-[#ebebee] dark:hover:bg-[#2b2d30] border border-[#e5e5e7] dark:border-[#28292d] text-[#18181b] dark:text-[#ffffff] font-medium text-xs shadow-sm hover:shadow-md transition-all"
           >
             <Plus className="w-4 h-4 text-[#4d6bfe]" />
             <span>New chat</span>
-          </button>
+          </motion.button>
         </div>
 
         {/* Multi-Select Bar */}
@@ -146,7 +146,9 @@ export const SidebarHistory: React.FC<SidebarHistoryProps> = ({
               <div className="text-[10px] font-semibold text-[#71717a] dark:text-[#9b9da1] uppercase px-2 mb-1 tracking-wider flex items-center gap-1">
                 <Pin className="w-2.5 h-2.5" /> Pinned
               </div>
-              {pinnedSessions.map((s) => renderSessionItem(s))}
+              <AnimatePresence initial={false}>
+                {pinnedSessions.map((s) => renderSessionItem(s))}
+              </AnimatePresence>
             </div>
           )}
 
@@ -161,7 +163,9 @@ export const SidebarHistory: React.FC<SidebarHistoryProps> = ({
                 No conversations yet
               </div>
             ) : (
-              recentSessions.map((s) => renderSessionItem(s))
+              <AnimatePresence initial={false}>
+                {recentSessions.map((s) => renderSessionItem(s))}
+              </AnimatePresence>
             )}
           </div>
         </div>
@@ -184,9 +188,14 @@ export const SidebarHistory: React.FC<SidebarHistoryProps> = ({
     const isSelected = selectedIds.includes(s.id);
 
     return (
-      <div
+      <motion.div
         key={s.id}
-        className={`group relative flex items-center justify-between px-3 py-2 rounded-xl text-xs cursor-pointer transition-all ${
+        layout
+        initial={{ opacity: 0, y: -4 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, x: -8 }}
+        transition={{ duration: 0.18 }}
+        className={`group relative flex items-center justify-between px-3 py-2 rounded-xl text-xs cursor-pointer transition-colors ${
           isActive
             ? "bg-[#ebecee] dark:bg-[#222325] text-[#18181b] dark:text-[#ffffff] font-medium shadow-sm border border-[#d4d4d8]/40 dark:border-[#33353a]/60"
             : "text-[#71717a] dark:text-[#9b9da1] hover:bg-[#f0f0f2] dark:hover:bg-[#1a1b1d] hover:text-[#18181b] dark:hover:text-[#ffffff]"
@@ -199,6 +208,13 @@ export const SidebarHistory: React.FC<SidebarHistoryProps> = ({
           }
         }}
       >
+        {isActive && (
+          <motion.span
+            layoutId="active-session-bar"
+            className="absolute left-0 top-1/2 -translate-y-1/2 h-4 w-[3px] rounded-full bg-[#4d6bfe]"
+            transition={{ duration: 0.2 }}
+          />
+        )}
         {isMultiSelectMode && (
           <div className="mr-2 text-[#4d6bfe]">
             {isSelected ? <CheckSquare className="w-3.5 h-3.5" /> : <Square className="w-3.5 h-3.5 text-[#71717a]" />}
@@ -268,7 +284,7 @@ export const SidebarHistory: React.FC<SidebarHistoryProps> = ({
             )}
           </>
         )}
-      </div>
+      </motion.div>
     );
   }
 };
